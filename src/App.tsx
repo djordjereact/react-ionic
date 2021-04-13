@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   IonApp,
     IonHeader,
@@ -10,10 +10,9 @@ import {
     IonCol,
     IonItem,
     IonLabel,
-    IonInput,
-    IonButton,
-    IonIcon, } from '@ionic/react';
-import {calculatorOutline, refreshCircleOutline, refreshOutline} from 'ionicons/icons';
+    IonInput } from '@ionic/react';
+import BmiControls from './components/BmiControls';
+import BmiResult from './components/BmiResult';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -35,18 +34,22 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 
 const App: React.FC = () => {
+    const [ calculatedBmi, setCalculatedBmi ] = useState<number>();
+
     const weightInputRef = useRef<HTMLIonInputElement>(null);
     const heightInputRef = useRef<HTMLIonInputElement>(null);
 
     const calculateBMI = () => {
       const enteredWeight = weightInputRef.current!.value;
       const enteredHeight = heightInputRef.current!.value;
+
       if (!enteredHeight || !enteredWeight) {
         return;
       }
 
       const bmi = +enteredWeight / (+enteredHeight * +enteredHeight);
 
+      setCalculatedBmi(bmi);
       console.log(bmi);
     };
 
@@ -80,23 +83,10 @@ const App: React.FC = () => {
                                 </IonItem>
                             </IonCol>
                         </IonRow>
-                        <IonRow>
-                            <IonCol className="ion-text-left">
-                                <IonButton onClick={calculateBMI}>
-                                    <IonIcon slot="start" icon={calculatorOutline}/>
-                                    Calculate
-                                </IonButton>
-                            </IonCol>
-                            <IonCol className="ion-text-right">
-                                <IonButton onClick={resetInputs}>
-                                    <IonIcon slot="start" icon={refreshOutline}/>
-                                    Refresh
-                                </IonButton>
-                            </IonCol>
-                        </IonRow>
-                        <IonRow>
-                            <IonCol></IonCol>
-                        </IonRow>
+                        <BmiControls onCalculate={calculateBMI} onReset={resetInputs}/>
+                        {calculatedBmi && (
+                            <BmiResult result={calculatedBmi}/>
+                        )}
                     </IonGrid>
                 </IonContent>
             </IonApp>
